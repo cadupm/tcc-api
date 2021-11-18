@@ -22,7 +22,18 @@ model User {
   gitHubLink      String?
   linkedinLink    String?
   contact         String?
+  student         Student?
   createdAt       DateTime             @default(now()) @map("created_at")
   updatedAt       DateTime             @updatedAt @map("updated_at")
   @@map("user")
+}
+
+model Student {
+  id                  String               @id @default(uuid()) @db.Uuid
+  user                User                 @relation(fields: [userId], references: [id])
+  userId              String               @db.Uuid
+  registration        String               @unique
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  @@map("student")
 }
