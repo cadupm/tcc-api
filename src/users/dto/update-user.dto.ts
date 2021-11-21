@@ -3,7 +3,9 @@ import { User } from '../entities/user.entity';
 import { CreateUserDto } from './create-user.dto';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
+    id: User['id']
     name?: User['name']
+    email?: User['email']
     password?: User['password']
     profileImage?: User['profileImage']
     expertise?: User['expertise']

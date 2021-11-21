@@ -1,5 +1,3 @@
-import { Student } from "src/students/entities/student.entity"
-
 export class User {
     id: string
     name: string
@@ -11,7 +9,6 @@ export class User {
     gitHubLink?: string
     linkedinLink?: string
     contact?: string
-    student?: Student
     createdAt: Date
     updatedAt: Date
 }
