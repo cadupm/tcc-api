@@ -4,10 +4,10 @@ WORKDIR /usr/app
 
 COPY package.json .
 
-COPY ./src/database/prisma/schema.prisma ./dist/database/prisma/schema.prisma
+COPY src/infra/database/prisma/schema.prisma ./dist/infra/database/prisma/schema.prisma
 
 RUN npm install
 
 COPY . .
 
-RUN npm run prisma:generate
+RUN npm run build && npm run prisma:generate
