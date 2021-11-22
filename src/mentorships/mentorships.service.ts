@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { StudentsService } from 'src/students/students.service';
 import { TeachersService } from 'src/teachers/teachers.service';
@@ -82,7 +82,7 @@ export class MentorshipsService {
   async remove(id: string) {
     const mentorship = await this.findOne(id)
 
-    if(!mentorship) throw new Error('Mentorship does not exists')
+    if(!mentorship) throw new BadRequestException('Mentorship does not exists')
 
     return this.prisma.mentorship.delete({
       where: {
