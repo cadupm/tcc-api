@@ -10,11 +10,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum MentorshipInvite {
+  pending
+  accepted
+  refused
+}
+
+
 
 model User {
   id              String               @id @default(uuid()) @db.Uuid
-  name            String               @unique
-  email           String              @unique
+  name            String               
+  email           String               @unique
   password        String
   profileImage    String?
   expertise       String?
@@ -34,6 +41,7 @@ model Student {
   user                User                 @relation(fields: [userId], references: [id])
   userId              String               @db.Uuid
   registration        String               @unique
+  mentorship          Mentorship?
   createdAt           DateTime             @default(now()) @map("created_at")
   updatedAt           DateTime             @updatedAt @map("updated_at")
   @@map("student")
@@ -44,7 +52,20 @@ model Teacher {
   user                User                 @relation(fields: [userId], references: [id])
   userId              String               @db.Uuid
   registration        String               @unique
+  mentorship          Mentorship[]
   createdAt           DateTime             @default(now()) @map("created_at")
   updatedAt           DateTime             @updatedAt @map("updated_at")
   @@map("teacher")
+}
+
+model Mentorship {
+  id                      String               @id @default(uuid()) @db.Uuid
+  student                 Student              @relation(fields: [studentId], references: [id])
+  studentId               String               @db.Uuid
+  teacher                 Teacher              @relation(fields: [teacherId], references: [id])
+  teacherId               String               @db.Uuid
+  isInvitationAccepted    MentorshipInvite     @default(pending)
+  createdAt               DateTime             @default(now()) @map("created_at")
+  updatedAt               DateTime             @updatedAt @map("updated_at")
+  @@map("mentorship")
 }
