@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { NotFoundError } from 'rxjs';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
@@ -12,8 +13,12 @@ export class TeachersService {
     private readonly usersService: UsersService
   ) {}
 
-  async create(createteacherDto: CreateTeacherDto): Promise<Teacher> {
-    const { name, email, password, registration } = createteacherDto
+  async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
+    const { name, email, password, registration } = createTeacherDto
+
+    const [existentUser] = await this.usersService.findAll(email)
+
+    if(existentUser) throw new BadRequestException('Professor já cadastrado!')
     
     const user = await this.prisma.user.create({
       data: {
@@ -42,13 +47,17 @@ export class TeachersService {
   }
 
   async findOne(id: string): Promise<Teacher> {
-    return this.prisma.teacher.findUnique({
+    const teacher = await this.prisma.teacher.findUnique({
       include: {
         user: true
       }, 
       where: {
         id
     }});
+
+    if(!teacher) throw new NotFoundException('Professor não cadastrado!')
+
+    return teacher
   }
 
   async update(id: string, updateteacherDto: UpdateTeacherDto): Promise<Teacher> {
@@ -69,6 +78,8 @@ export class TeachersService {
   }
 
   async remove(id: string): Promise<unknown> {
+    await this.findOne(id)
+    
     return this.prisma.teacher.delete({
       where: {
         id
