@@ -65,13 +65,18 @@ export class StudentsService {
 
     const studentInfo = await this.findOne(id)
 
-    const [existentStudentWithEmail] = await this.usersService.findAll(email)
+    if(email && studentInfo.user.email !== email) {
+      const [existentUserWithEmail] = await this.usersService.findAll(email)
 
-    if(existentStudentWithEmail) throw new BadRequestException('Estudante com email já cadastrado')
+      if(existentUserWithEmail.id !== studentInfo.userId) throw new BadRequestException('Estudante com email já cadastrado!')
+    }
 
-    await this.usersService.update(studentInfo.id, rest)
+    await this.usersService.update(studentInfo.userId, rest)
     
     return this.prisma.student.update({
+      include: {
+        user: true,
+      },
       where: {
         id
       },
