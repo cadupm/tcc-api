@@ -71,6 +71,11 @@ export class MentorshipsService {
   }
 
   async update(id: string, updateMentorshipDto: UpdateMentorshipDto) {
+    const { isInvitationAccepted } = updateMentorshipDto
+
+    if(isInvitationAccepted === 'refused') 
+      return this.remove(id)
+
     const mentorship = await this.findOne(id)
 
     if(!mentorship) throw new NotFoundException('Mentoria não cadastrada!')
