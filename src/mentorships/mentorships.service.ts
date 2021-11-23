@@ -73,12 +73,17 @@ export class MentorshipsService {
   async update(id: string, updateMentorshipDto: UpdateMentorshipDto) {
     const { isInvitationAccepted } = updateMentorshipDto
 
-    if(isInvitationAccepted === 'refused') 
+    await this.findOne(id)
+
+    if(isInvitationAccepted === 'refused') {
+      await this.prisma.mentorship.update({
+        where: {
+          id
+        },
+        data: updateMentorshipDto
+      })
       return this.remove(id)
-
-    const mentorship = await this.findOne(id)
-
-    if(!mentorship) throw new NotFoundException('Mentoria não cadastrada!')
+    }
 
     return this.prisma.mentorship.update({
       where: {
