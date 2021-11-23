@@ -62,8 +62,13 @@ export class TeachersService {
 
   async update(id: string, updateteacherDto: UpdateTeacherDto): Promise<Teacher> {
     const { registration, ...rest } = updateteacherDto
+    const { email } = rest
 
     const teacherInfo = await this.findOne(id)
+
+    const [existentTeacherWithEmail] = await this.usersService.findAll(email)
+
+    if(existentTeacherWithEmail) throw new BadRequestException('Professor com email já cadastrado')
 
     await this.usersService.update(teacherInfo.id, rest)
     
