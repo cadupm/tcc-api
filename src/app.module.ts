@@ -6,9 +6,10 @@ import { TeachersModule } from './teachers/teachers.module';
 import { MentorshipsModule } from './mentorships/mentorships.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './errors/all-exception.filter';
+import { FilesModule } from './files/files.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, StudentsModule, TeachersModule, MentorshipsModule],
+  imports: [PrismaModule, UsersModule, StudentsModule, TeachersModule, MentorshipsModule, FilesModule],
   controllers: [],
   providers: [{
     provide: APP_FILTER,
