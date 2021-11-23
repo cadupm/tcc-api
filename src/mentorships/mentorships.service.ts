@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { StudentsService } from 'src/students/students.service';
 import { TeachersService } from 'src/teachers/teachers.service';
@@ -21,13 +21,13 @@ export class MentorshipsService {
 
     const [existentMentorship] = await this.findAll(student.id)
 
-    if(existentMentorship) throw new Error('Você já tem uma orientação marcada. Por favor, cancele a anterior caso deseja efetuar um novo convite!')
+    if(existentMentorship) throw new BadRequestException('Você já tem uma orientação marcada. Por favor, cancele a anterior caso deseja efetuar um novo convite!')
 
-    if(!student) throw new Error('Estudante não cadastrado!')
+    if(!student) throw new NotFoundException('Estudante não cadastrado!')
 
     const teacher = await this.teachersService.findOne(teacherId)
 
-    if(!teacher) throw new Error('Orientador não cadastrado!')
+    if(!teacher) throw new NotFoundException('Orientador não cadastrado!')
 
     return this.prisma.mentorship.create({
       data: createMentorshipDto
@@ -55,7 +55,7 @@ export class MentorshipsService {
   }
 
   async findOne(id: string): Promise<Mentorship> {
-    return this.prisma.mentorship.findUnique({
+    const membership = await this.prisma.mentorship.findUnique({
       include: {
         student: true,
         teacher: true,
@@ -64,12 +64,16 @@ export class MentorshipsService {
         id
       }
     });
+
+    if(!membership) throw new NotFoundException('Mentoria não cadastrada!')
+
+    return membership
   }
 
   async update(id: string, updateMentorshipDto: UpdateMentorshipDto) {
     const mentorship = await this.findOne(id)
 
-    if(!mentorship) throw new Error('Mentorship does not exists')
+    if(!mentorship) throw new NotFoundException('Mentoria não cadastrada!')
 
     return this.prisma.mentorship.update({
       where: {
@@ -80,9 +84,7 @@ export class MentorshipsService {
   }
 
   async remove(id: string) {
-    const mentorship = await this.findOne(id)
-
-    if(!mentorship) throw new BadRequestException('Mentorship does not exists')
+    await this.findOne(id) 
 
     return this.prisma.mentorship.delete({
       where: {
