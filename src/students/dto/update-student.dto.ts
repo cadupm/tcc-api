@@ -5,6 +5,7 @@ import { CreateStudentDto } from './create-student.dto';
 
 export class UpdateStudentDto extends PartialType(CreateStudentDto) {
     name?: User['name']
+    email?: User['email']
     password?: User['password']
     registration?: Student['registration']
     profileImage?: User['profileImage']
