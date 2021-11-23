@@ -60,19 +60,17 @@ export class TeachersService {
     return teacher
   }
 
-  async update(id: string, updateteacherDto: UpdateTeacherDto): Promise<Teacher> {
-    const { registration, ...rest } = updateteacherDto
-    const { email } = rest
+  async update(id: string, updateTeacherDto: UpdateTeacherDto): Promise<Teacher> {
+    const { registration, ...rest } = updateTeacherDto
 
     const teacherInfo = await this.findOne(id)
 
-    const [existentTeacherWithEmail] = await this.usersService.findAll(email)
-
-    if(existentTeacherWithEmail) throw new BadRequestException('Professor com email já cadastrado')
-
-    await this.usersService.update(teacherInfo.id, rest)
+    await this.usersService.update(teacherInfo.userId, rest)
     
     return this.prisma.teacher.update({
+      include: {
+        user: true,
+      },
       where: {
         id
       },
