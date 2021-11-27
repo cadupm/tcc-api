@@ -9,9 +9,10 @@ import { AllExceptionsFilter } from './errors/all-exception.filter';
 import { FilesModule } from './files/files.module';
 import { SubmissionsModule } from './submissions/submissions.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { MetricsModule } from './metrics/metrics.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, StudentsModule, TeachersModule, MentorshipsModule, FilesModule, SubmissionsModule, ReviewsModule],
+  imports: [PrismaModule, UsersModule, StudentsModule, TeachersModule, MentorshipsModule, FilesModule, SubmissionsModule, ReviewsModule, MetricsModule],
   controllers: [],
   providers: [{
     provide: APP_FILTER,
