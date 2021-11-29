@@ -17,17 +17,13 @@ export class MentorshipsService {
   async create(createMentorshipDto: CreateMentorshipDto): Promise<Mentorship> {
     const { studentId, teacherId } = createMentorshipDto
    
-    const student = await this.studentsService.findOne(studentId)
+    const existentStudent = await this.studentsService.findOne(studentId)
+    
+    await this.teachersService.findOne(teacherId)
 
-    const [existentMentorship] = await this.findAll(student.id)
+    const [existentMentorship] = await this.findAll(existentStudent.id)
 
     if(existentMentorship) throw new BadRequestException('Você já tem uma orientação marcada. Por favor, cancele a anterior caso deseja efetuar um novo convite!')
-
-    if(!student) throw new NotFoundException('Estudante não cadastrado!')
-
-    const teacher = await this.teachersService.findOne(teacherId)
-
-    if(!teacher) throw new NotFoundException('Orientador não cadastrado!')
 
     return this.prisma.mentorship.create({
       data: createMentorshipDto
