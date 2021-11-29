@@ -89,6 +89,7 @@ model Submission {
   reviews                 Review[]
   createdAt               DateTime          @default(now()) @map("created_at")
   updatedAt               DateTime          @updatedAt @map("updated_at")
+  @@map("submission")
 }
 
 model Review {
@@ -99,6 +100,7 @@ model Review {
   metrics                 Metric[]
   createdAt               DateTime          @default(now()) @map("created_at")
   updatedAt               DateTime          @updatedAt @map("updated_at")
+  @@map("review")
 }
 
 model Metric {
@@ -109,4 +111,5 @@ model Metric {
   reviewId                Int            
   createdAt               DateTime          @default(now()) @map("created_at")
   updatedAt               DateTime          @updatedAt @map("updated_at")
+  @@map("metric")
 }
