@@ -10,9 +10,10 @@ import { FilesModule } from './files/files.module';
 import { SubmissionsModule } from './submissions/submissions.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { MetricsModule } from './metrics/metrics.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, StudentsModule, TeachersModule, MentorshipsModule, FilesModule, SubmissionsModule, ReviewsModule, MetricsModule],
+  imports: [PrismaModule, UsersModule, StudentsModule, TeachersModule, MentorshipsModule, FilesModule, SubmissionsModule, ReviewsModule, MetricsModule, AuthModule],
   controllers: [],
   providers: [{
     provide: APP_FILTER,
