@@ -14,7 +14,7 @@ export class TeachersService {
   ) {}
 
   async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
-    const { name, email, password, registration } = createTeacherDto
+    const { name, email, roles, password, registration } = createTeacherDto
 
     const [existentUser] = await this.usersService.findAll(email)
 
@@ -24,6 +24,7 @@ export class TeachersService {
       data: {
         name,
         email,
+        roles,
         password
       }
     })

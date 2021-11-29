@@ -13,7 +13,7 @@ export class StudentsService {
   ) {}
 
   async create(createStudentDto: CreateStudentDto): Promise<Student> {
-    const { name, email, password, registration } = createStudentDto
+    const { name, email, roles, password, registration } = createStudentDto
 
     const [existentUser] = await this.usersService.findAll(email)
 
@@ -23,6 +23,7 @@ export class StudentsService {
       data: {
         name,
         email,
+        roles,
         password
       }
     })
