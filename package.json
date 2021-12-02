@@ -34,6 +34,8 @@
     "@nestjs/platform-express": "^8.0.0",
     "@prisma/client": "^3.5.0",
     "aws-sdk": "^2.1035.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
