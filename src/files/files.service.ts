@@ -1,7 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { File } from './entities/file.entity'
-import { PrismaService } from 'src/database/prisma/prisma.service';
 import { UploadFileDto } from './dto/upload-file.dto';
 
 import { S3 } from "aws-sdk";
@@ -12,7 +10,7 @@ export class FilesService {
   private AWS_S3_BUCKET: string; 
   private s3: S3;
 
-  constructor(private prisma: PrismaService, private configService: ConfigService) {
+  constructor(private configService: ConfigService) {
     this.AWS_S3_BUCKET = this.configService.get<string>('AWS_BUCKET_NAME');
     this.s3 = new S3
     ({
@@ -21,55 +19,59 @@ export class FilesService {
         region: this.configService.get<string>('AWS_REGION'),
     });
   }
-  async uploadFile(uploadFile: UploadFileDto):Promise<File> {
+  async uploadFile(userId: string, uploadFile: UploadFileDto):Promise<string> {
     const { path, buffer } = uploadFile
     const hash = randomBytes(16).toString('hex').replace(/\//gi, '-');
+    const [name, ext] = path.split('.')
 
-    await this.s3
+    const fileUploaded = await this.s3
     .upload({
       Bucket: this.AWS_S3_BUCKET,
-      Key: `${path}/${hash}`,
+      Key: `${userId}/${name}-${hash}.${ext}`,
       Body: buffer,
     })
     .promise()
-    .then((response) => {
-      return response.Location;
-    })
-    .catch(() => { throw new BadRequestException('Erro na criação do arquivo!'); })
+      .then((response) => {
+        return response.Location;
+      })
+      .catch(() => {
+        throw new BadRequestException('Erro na criação do arquivo!')
+      });
 
-    return this.prisma.file.create({
-      data: {...uploadFile, path: `${path}/${hash}`}
-    })
+    return fileUploaded;
   }
 
-  async getFile(path: string): Promise<File> {
-    const [file] = await this.prisma.file.findMany({
-      where: {
-        path
-      }
+  async getFile(path: string): Promise<any> {
+    const file = await this.s3.getObject({
+      Bucket: this.AWS_S3_BUCKET,
+      Key: path,
     })
+    .promise()
+      .then((response) => {
+        return response;
+      })
+      .catch(() => {
+        throw new BadRequestException('Arquivo não encontrado!')
+      });
 
-    if(!file) throw new NotFoundException('Arquivo não encontrado!')
-
-    return file
+      return file
   }
 
   async removeFile(key: string): Promise<void> {
-    const file = await this.getFile(key)
-
-    await this.prisma.file.delete({
-      where: {
-        id: file.id
-      }
-    })
+    await this.getFile(this.getImageKey(key))
 
     return this.s3
     .deleteObject({
       Bucket: this.AWS_S3_BUCKET,
-      Key: key,
+      Key: this.getImageKey(key),
     })
     .promise()
     .then(() => {})
     .catch(() => { throw new BadRequestException('Erro ao deletar arquivo!'); });
+  }
+
+  private getImageKey(path: string) {
+    const [, key] = path.split(`https://${this.AWS_S3_BUCKET}.s3.amazonaws.com/`);
+    return key;
   }
 }
