@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpCode, HttpStatus, UseInterceptors, UploadedFile, Put } from '@nestjs/common';
 import { TeachersService } from './teachers.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('teachers')
 export class TeachersController {
@@ -25,10 +26,11 @@ export class TeachersController {
     return this.teachersService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @HttpCode(HttpStatus.OK)
-  update(@Param('id') id: string, @Body() updateTeacherDto: UpdateTeacherDto) {
-    return this.teachersService.update(id, updateTeacherDto);
+  @UseInterceptors(FileInterceptor('profileImage'))
+  update(@Param('id') id: string, @Body() updateTeacherDto: UpdateTeacherDto, @UploadedFile() file: Express.Multer.File) {
+    return this.teachersService.update(id, updateTeacherDto, file);
   }
 
   @Delete(':id')
