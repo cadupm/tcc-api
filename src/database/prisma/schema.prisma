@@ -75,14 +75,6 @@ model Mentorship {
   @@map("mentorship")
 }
 
-model File {
-  id                      String               @id @default(uuid()) @db.Uuid
-  buffer                  String
-  path                    String
-  createdAt               DateTime             @default(now()) @map("created_at")
-  updatedAt               DateTime             @updatedAt @map("updated_at")
-  @@map("file")
-}
 
 model Submission {
   id                      Int               @id @default(autoincrement())
