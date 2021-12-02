@@ -1,5 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { PrismaService } from 'src/database/prisma/prisma.service';
+import { UploadFileDto } from 'src/files/dto/upload-file.dto';
+import { FilesService } from 'src/files/files.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -9,11 +12,12 @@ import { Student } from './entities/student.entity';
 export class StudentsService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly filesService: FilesService,
   ) {}
 
   async create(createStudentDto: CreateStudentDto): Promise<Student> {
-    const { name, email, password, registration } = createStudentDto
+    const { name, email, roles, password, registration } = createStudentDto
 
     const [existentUser] = await this.usersService.findAll(email)
 
@@ -23,6 +27,7 @@ export class StudentsService {
       data: {
         name,
         email,
+        roles,
         password
       }
     })
@@ -59,11 +64,12 @@ export class StudentsService {
     return student
   }
 
-  async update(id: string, updateStudentDto: UpdateStudentDto): Promise<Student> {
+  async update(id: string, updateStudentDto: UpdateStudentDto, file?: Express.Multer.File): Promise<Student> {
     const { registration, ...rest } = updateStudentDto
     const { email } = rest
 
     const studentInfo = await this.findOne(id)
+    
 
     if(email && studentInfo.user.email !== email) {
       const [existentUserWithEmail] = await this.usersService.findAll(email)
@@ -71,7 +77,13 @@ export class StudentsService {
       if(existentUserWithEmail.id !== studentInfo.userId) throw new BadRequestException('Estudante com email já cadastrado!')
     }
 
-    await this.usersService.update(studentInfo.userId, rest)
+    let newProfileImage = ''
+    if(file) {
+      if(studentInfo.user.profileImage.length) await this.filesService.removeFile(studentInfo.user.profileImage)
+      newProfileImage = await this.filesService.uploadFile(id, { path: file.originalname, buffer: file.buffer.toString() })
+    }
+
+    await this.usersService.update(studentInfo.userId, {...rest, profileImage: newProfileImage})
     
     return this.prisma.student.update({
       include: {

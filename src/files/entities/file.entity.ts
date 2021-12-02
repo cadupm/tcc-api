@@ -1,6 +1,6 @@
 export class File {
-    id: string;
-    buffer: any
+    id: string
+    buffer: string
     path: string
     createdAt: Date
     updatedAt: Date
