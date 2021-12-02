@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { NotFoundError } from 'rxjs';
 import { PrismaService } from 'src/database/prisma/prisma.service';
+import { FilesService } from 'src/files/files.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
@@ -10,7 +11,8 @@ import { Teacher } from './entities/teacher.entity';
 export class TeachersService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly filesService: FilesService
   ) {}
 
   async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
@@ -61,10 +63,18 @@ export class TeachersService {
     return teacher
   }
 
-  async update(id: string, updateTeacherDto: UpdateTeacherDto): Promise<Teacher> {
+  async update(id: string, updateTeacherDto: UpdateTeacherDto, file?: Express.Multer.File): Promise<Teacher> {
     const { registration, ...rest } = updateTeacherDto
 
     const teacherInfo = await this.findOne(id)
+
+    let newProfileImage = ''
+    if(file) {
+      if(teacherInfo.user.profileImage.length) await this.filesService.removeFile(teacherInfo.user.profileImage)
+      newProfileImage = await this.filesService.uploadFile(id, { path: file.originalname, buffer: file.buffer.toString() })
+    }
+
+    await this.usersService.update(teacherInfo.userId, {...rest, profileImage: newProfileImage})
 
     await this.usersService.update(teacherInfo.userId, rest)
     
