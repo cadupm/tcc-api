@@ -1,7 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException, UseInterceptors } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma/prisma.service';
-import { UploadFileDto } from 'src/files/dto/upload-file.dto';
 import { FilesService } from 'src/files/files.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -80,7 +78,7 @@ export class StudentsService {
     let newProfileImage = ''
     if(file) {
       if(studentInfo.user.profileImage.length) await this.filesService.removeFile(studentInfo.user.profileImage)
-      newProfileImage = await this.filesService.uploadFile(id, { path: file.originalname, buffer: file.buffer.toString() })
+      newProfileImage = await this.filesService.uploadFile(id, { path: file.originalname, buffer: file.buffer, mimetype: file.mimetype }, 'avatar')
     }
 
     await this.usersService.update(studentInfo.userId, {...rest, profileImage: newProfileImage})

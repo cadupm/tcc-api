@@ -1,4 +1,4 @@
-import { IsIn, IsNotEmpty, IsUUID } from "class-validator";
+import { IsIn, IsNotEmpty, IsOptional, IsUUID } from "class-validator";
 import { Mentorship } from "../entities/mentorship.entity";
 
 export class CreateMentorshipDto {
@@ -11,5 +11,6 @@ export class CreateMentorshipDto {
     teacherId: Mentorship['teacherId']
 
     @IsIn(['pending', 'accepted', 'refused'])
+    @IsOptional()
     isInvitationAccepted?: Mentorship['isInvitationAccepted']
 }

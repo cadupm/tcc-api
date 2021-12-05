@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { NotFoundError } from 'rxjs';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { FilesService } from 'src/files/files.service';
 import { UsersService } from 'src/users/users.service';
@@ -71,7 +70,7 @@ export class TeachersService {
     let newProfileImage = ''
     if(file) {
       if(teacherInfo.user.profileImage.length) await this.filesService.removeFile(teacherInfo.user.profileImage)
-      newProfileImage = await this.filesService.uploadFile(id, { path: file.originalname, buffer: file.buffer.toString() })
+      newProfileImage = await this.filesService.uploadFile(id, { path: file.originalname, buffer: file.buffer, mimetype: file.mimetype }, 'avatar')
     }
 
     await this.usersService.update(teacherInfo.userId, {...rest, profileImage: newProfileImage})

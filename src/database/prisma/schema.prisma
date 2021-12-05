@@ -82,6 +82,7 @@ model Submission {
   notReviewed             Boolean           @default(true)
   mentorship              Mentorship        @relation(fields: [mentorshipId], references:[id])
   mentorshipId            String            @db.Uuid
+  filesUrl                String[]
   reviews                 Review[]
   createdAt               DateTime          @default(now()) @map("created_at")
   updatedAt               DateTime          @updatedAt @map("updated_at")
