@@ -5,6 +5,7 @@ export class Submission {
     description: string
     notReviewed: boolean
     mentorshipId: string
+    filesUrl: string[]
     reviews: Review[]
     createdAt: Date
     updatedAt: Date
