@@ -19,16 +19,19 @@ export class FilesService {
         region: this.configService.get<string>('AWS_REGION'),
     });
   }
-  async uploadFile(userId: string, uploadFile: UploadFileDto):Promise<string> {
-    const { path, buffer } = uploadFile
+  async uploadFile(userId: string, uploadFile: UploadFileDto, folder: string):Promise<string> {
+    const { path, buffer, mimetype } = uploadFile
+    console.log(buffer)
     const hash = randomBytes(16).toString('hex').replace(/\//gi, '-');
     const [name, ext] = path.split('.')
 
     const fileUploaded = await this.s3
     .upload({
       Bucket: this.AWS_S3_BUCKET,
-      Key: `${userId}/${name}-${hash}.${ext}`,
+      Key: `${folder}/${userId}/${name}-${hash}.${ext}`,
       Body: buffer,
+      ACL: 'public-read',
+      ContentType: mimetype
     })
     .promise()
       .then((response) => {
