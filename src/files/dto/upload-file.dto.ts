@@ -9,4 +9,8 @@ export class UploadFileDto {
     @IsString()
     @IsNotEmpty()
     path: File['path']
+
+    @IsString()
+    @IsNotEmpty()
+    mimetype: File['mimetype']
 }
