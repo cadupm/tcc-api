@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { FilesService } from 'src/files/files.service';
 import { MentorshipsService } from 'src/mentorships/mentorships.service';
@@ -18,13 +18,16 @@ export class SubmissionsService {
     
     const existentMentorship = await this.mentorshipsService.findOne(mentorshipId)
 
-    const urls = await Promise.all(
+    if(existentMentorship.isInvitationAccepted === 'accepted') {
+      const urls = await Promise.all(
         files.map(async (file) => this.filesService.uploadFile(existentMentorship.id, { path: file.originalname, buffer: file.buffer, mimetype: file.mimetype }, 'files')))
-    
 
-    return this.prisma.submission.create({
-      data: {...createSubmissionDto, filesUrl: urls }
-    })
+      return this.prisma.submission.create({
+          data: {...createSubmissionDto, filesUrl: urls }
+      })
+    }
+    
+    throw new BadRequestException('Seu convite de orientação não foi aceito!')
   }
 
   async findAll() {
