@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { MentorshipsService } from './mentorships.service';
 import { CreateMentorshipDto } from './dto/create-mentorship.dto';
 import { UpdateMentorshipDto } from './dto/update-mentorship.dto';
@@ -32,14 +32,17 @@ export class MentorshipsController {
     return this.mentorshipsService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @Roles(Role.Teacher)
+  @UseGuards(RolesGuard)
   @HttpCode(HttpStatus.OK)
   update(@Param('id') id: string, @Body() updateMentorshipDto: UpdateMentorshipDto) {
     return this.mentorshipsService.update(id, updateMentorshipDto);
   }
 
   @Delete(':id')
+  @Roles(Role.Student)
+  @UseGuards(RolesGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
     return this.mentorshipsService.remove(id);

@@ -1,8 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete, HttpCode, HttpStatus, UseInterceptors, UploadedFile, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpCode, HttpStatus, UseInterceptors, UploadedFile, Put, UseGuards } from '@nestjs/common';
 import { TeachersService } from './teachers.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from 'src/users/roles/roles.decorator';
+import { Role } from 'src/users/roles/roles.enum';
+import { RolesGuard } from 'src/users/guards/roles.guard';
 
 @Controller('teachers')
 export class TeachersController {
@@ -27,6 +31,9 @@ export class TeachersController {
   }
 
   @Put(':id')
+  @Roles(Role.Teacher)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('profileImage'))
   update(@Param('id') id: string, @Body() updateTeacherDto: UpdateTeacherDto, @UploadedFile() file: Express.Multer.File) {
@@ -34,6 +41,9 @@ export class TeachersController {
   }
 
   @Delete(':id')
+  @Roles(Role.Teacher)
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
     return this.teachersService.remove(id);
