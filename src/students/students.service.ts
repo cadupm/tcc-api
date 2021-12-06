@@ -41,21 +41,31 @@ export class StudentsService {
   }
 
   async findAll(): Promise<Student[]> {
-    return this.prisma.student.findMany({
+    const students = await this.prisma.student.findMany({
       include: {
         user: true
       }
     });
+
+    const modifyStudents = students.map(student => {
+      delete student.user.password
+
+      return student
+    })
+
+    return modifyStudents
   }
 
   async findOne(id: string): Promise<Student> {
     const student = await this.prisma.student.findUnique({
       include: {
-        user: true
+        user: true,
       }, 
       where: {
         id
     }});
+
+    delete student.user.password
 
     if(!student) throw new NotFoundException('Estudante não cadastrado!')
 
@@ -96,13 +106,15 @@ export class StudentsService {
     })
   }
 
-  async remove(id: string): Promise<unknown> {
-    await this.findOne(id)
-
-    return this.prisma.student.delete({
+  async remove(id: string): Promise<void> {
+    const studentInfo = await this.findOne(id)
+    
+    await this.prisma.student.delete({
       where: {
         id
       }
-    });
+    })
+
+    await this.usersService.remove(studentInfo.userId)
   }
 }
