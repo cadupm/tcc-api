@@ -1,5 +1,5 @@
 import { User } from '../entities/user.entity'
-import { IsString, IsEmail, IsNotEmpty, IsIn, IsArray } from 'class-validator'
+import { IsString, IsEmail, IsNotEmpty, IsArray } from 'class-validator'
 
 export class CreateUserDto {
     @IsString()
@@ -12,7 +12,6 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @IsArray()
-    @IsIn([["student"], ["teacher"]])
     roles: User['roles']
 
     @IsString()
