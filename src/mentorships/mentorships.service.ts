@@ -51,7 +51,7 @@ export class MentorshipsService {
   }
 
   async findOne(id: string): Promise<Mentorship> {
-    const membership = await this.prisma.mentorship.findUnique({
+    const mentorship = await this.prisma.mentorship.findUnique({
       include: {
         student: true,
         teacher: true,
@@ -61,12 +61,12 @@ export class MentorshipsService {
       }
     });
 
-    if(!membership) throw new NotFoundException('Mentoria não cadastrada!')
+    if(!mentorship) throw new NotFoundException('Mentoria não cadastrada!')
 
-    return membership
+    return mentorship
   }
 
-  async update(id: string, updateMentorshipDto: UpdateMentorshipDto) {
+  async update(id: string, updateMentorshipDto: UpdateMentorshipDto): Promise<Mentorship> {
     const { isInvitationAccepted } = updateMentorshipDto
 
     await this.findOne(id)
@@ -78,7 +78,7 @@ export class MentorshipsService {
         },
         data: updateMentorshipDto
       })
-      return this.remove(id)
+      await this.remove(id)
     }
 
     return this.prisma.mentorship.update({
@@ -89,10 +89,10 @@ export class MentorshipsService {
     })
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<void> {
     await this.findOne(id) 
 
-    return this.prisma.mentorship.delete({
+    await this.prisma.mentorship.delete({
       where: {
         id
       }
