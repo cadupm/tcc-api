@@ -1,4 +1,4 @@
-import { IsArray, IsEmail, IsIn, IsNotEmpty, IsString } from "class-validator"
+import { IsArray, IsEmail, IsNotEmpty, IsString } from "class-validator"
 import { User } from "src/users/entities/user.entity"
 import { Teacher } from "../entities/teacher.entity"
 
@@ -13,7 +13,6 @@ export class CreateTeacherDto {
 
     @IsNotEmpty()
     @IsArray()
-    @IsIn([["student"], ["teacher"]])
     roles: User['roles']
 
     @IsString()

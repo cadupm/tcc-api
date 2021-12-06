@@ -21,7 +21,7 @@ export class FilesService {
   }
   async uploadFile(userId: string, uploadFile: UploadFileDto, folder: string):Promise<string> {
     const { path, buffer, mimetype } = uploadFile
-    console.log(buffer)
+
     const hash = randomBytes(16).toString('hex').replace(/\//gi, '-');
     const [name, ext] = path.split('.')
 

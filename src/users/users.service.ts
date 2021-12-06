@@ -26,20 +26,29 @@ export class UsersService {
   }
 
   async findAll(email?: string): Promise<User[]> {
-    return this.prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       where: {
         email
       }
     })
+
+    const modifyUsers = users.map(user => { 
+      delete user.password
+      return user
+  })
+
+    return modifyUsers
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<User> {
     const user = await this.prisma.user.findUnique({ 
       where: {
         id
     }});
 
     if(!user) throw new NotFoundException('Usuário não cadastrado!')
+
+    delete user.password
 
     return user
   }
@@ -53,13 +62,13 @@ export class UsersService {
     })
   }
 
-  async remove(id: string): Promise<unknown> {
+  async remove(id: string): Promise<void> {
     await this.findOne(id)
-    
-    return this.prisma.user.delete({
+       
+    await this.prisma.user.delete({
       where: {
-        id
-      }
-    });
+        id: id
+    }
+  })
   }
 }

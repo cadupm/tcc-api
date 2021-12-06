@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, IsUUID } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 import { Review } from "../entities/review.entity";
 
 export class CreateReviewDto {
@@ -9,4 +9,8 @@ export class CreateReviewDto {
     @IsNumber()
     @IsNotEmpty()
     submissionId: Review['submissionId']
+
+    @IsString()
+    @IsNotEmpty()
+    mentorshipId: Review['mentorshipId']
 }

@@ -41,11 +41,19 @@ export class TeachersService {
   }
 
   async findAll(): Promise<Teacher[]> {
-    return this.prisma.teacher.findMany({
+    const teachers = await this.prisma.teacher.findMany({
       include: {
         user: true
       }
     });
+
+    const modifyTeachers = teachers.map(teacher => {
+      delete teacher.user.password
+
+      return teacher
+    })
+
+    return modifyTeachers
   }
 
   async findOne(id: string): Promise<Teacher> {
@@ -56,6 +64,8 @@ export class TeachersService {
       where: {
         id
     }});
+
+    delete teacher.user.password
 
     if(!teacher) throw new NotFoundException('Professor não cadastrado!')
 
@@ -90,10 +100,12 @@ export class TeachersService {
     })
   }
 
-  async remove(id: string): Promise<unknown> {
-    await this.findOne(id)
+  async remove(id: string): Promise<void> {
+    const teacherInfo = await this.findOne(id)
     
-    return this.prisma.teacher.delete({
+    await this.usersService.remove(teacherInfo.userId)
+    
+    await this.prisma.teacher.delete({
       where: {
         id
       }

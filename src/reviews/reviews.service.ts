@@ -24,11 +24,18 @@ export class ReviewsService {
   }
 
   async findAll(): Promise<Review[]> {
-    return this.prisma.review.findMany({})
+    return this.prisma.review.findMany({
+      include: {
+        metrics: true
+      }
+    })
   }
 
   async findOne(id: number): Promise<Review> {
     const review = await this.prisma.review.findUnique({
+      include: {
+        metrics: true
+      },
       where: {
         id
       }
