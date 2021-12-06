@@ -71,16 +71,8 @@ export class MentorshipsService {
 
     await this.findOne(id)
 
-    if(isInvitationAccepted === 'refused') {
-      await this.prisma.mentorship.update({
-        where: {
-          id
-        },
-        data: updateMentorshipDto
-      })
-      await this.remove(id)
-    }
-
+    if(isInvitationAccepted === 'refused') return this.remove(id)
+    
     return this.prisma.mentorship.update({
       where: {
         id
@@ -89,10 +81,10 @@ export class MentorshipsService {
     })
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string): Promise<Mentorship> {
     await this.findOne(id) 
 
-    await this.prisma.mentorship.delete({
+    return this.prisma.mentorship.delete({
       where: {
         id
       }
