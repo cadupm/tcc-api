@@ -6,13 +6,14 @@ import { PrismaService } from './database/prisma/prisma.service'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors()
+  
   const prismaService: PrismaService = app.get(PrismaService);
   prismaService.enableShutdownHooks(app)
 
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
-  app.enableCors()
 
-  await app.listen(process.env.API_PORT);
+  await app.listen(process.env.API_PORT || 3000);
 }
 bootstrap();
