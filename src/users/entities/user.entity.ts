@@ -1,4 +1,3 @@
-import { UserRole } from "@prisma/client"
 import { Student } from "src/students/entities/student.entity"
 
 
