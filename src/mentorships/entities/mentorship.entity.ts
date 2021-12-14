@@ -1,4 +1,4 @@
-import { Teacher } from ".prisma/client"
+import { Teacher } from "@prisma/client"
 import { Student } from "src/students/entities/student.entity"
 import { Submission } from "src/submissions/entities/submission.entity"
 
