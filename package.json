@@ -12,7 +12,7 @@
     "start": "npm run prisma:push && npm run start:prod",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main.js",
+    "start:prod": "node src/main.js",
     "prisma:generate": "prisma generate --schema=./src/database/prisma/schema.prisma",
     "prisma:migration:create": "prisma migrate dev  --schema=./src/database/prisma/schema.prisma --name",
     "prisma:migration:run": "prisma migrate dev  --schema=./src/database/prisma/schema.prisma",
