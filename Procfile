@@ -1,1 +1,1 @@
-web: npm run start:prod
+web: npm run prisma:generate && npm run prisma:push && npm run start:prod
