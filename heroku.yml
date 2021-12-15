@@ -6,4 +6,7 @@ build:
   docker:
     web: Dockerfile
 run:
-  web: npm run start
+  web:
+    command:
+      - npm run start
+    image: web
