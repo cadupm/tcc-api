@@ -1,5 +1,9 @@
+setup:
+  addons:
+    - plan: heroku-postgresql
+      as: DATABASE
 build:
   docker:
-    web: docker-compose.yml
+    web: Dockerfile
 run:
   web: npm run start
