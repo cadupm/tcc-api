@@ -3,6 +3,7 @@ import { PrismaService } from 'src/database/prisma/prisma.service';
 import { StudentsService } from 'src/students/students.service';
 import { TeachersService } from 'src/teachers/teachers.service';
 import { CreateMentorshipDto } from './dto/create-mentorship.dto';
+import { ListMentorshipDto } from './dto/list-mentorship.dto';
 import { UpdateMentorshipDto } from './dto/update-mentorship.dto';
 import { Mentorship } from './entities/mentorship.entity';
 
@@ -21,7 +22,7 @@ export class MentorshipsService {
     
     await this.teachersService.findOne(teacherId)
 
-    const [existentMentorship] = await this.findAll(existentStudent.id)
+    const [existentMentorship] = await this.findAll({ studentId: existentStudent.id })
 
     if(existentMentorship) throw new BadRequestException('Você já tem uma orientação marcada. Por favor, cancele a anterior caso deseja efetuar um novo convite!')
 
@@ -30,7 +31,7 @@ export class MentorshipsService {
     })
   }
 
-  async findAll(studentId?: string): Promise<Mentorship[]> {
+  async findAll(listMentorshipDto: ListMentorshipDto): Promise<Mentorship[]> {
     return this.prisma.mentorship.findMany({
       include: {
         student: {
@@ -44,9 +45,7 @@ export class MentorshipsService {
           }
         },
       },
-      where: {
-        studentId
-      }
+      where: listMentorshipDto
     });
   }
 

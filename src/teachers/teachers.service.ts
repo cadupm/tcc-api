@@ -3,6 +3,7 @@ import { PrismaService } from 'src/database/prisma/prisma.service';
 import { FilesService } from 'src/files/files.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
+import { ListTeacherDto } from './dto/list-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { Teacher } from './entities/teacher.entity';
 
@@ -17,7 +18,7 @@ export class TeachersService {
   async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
     const { name, email, roles, password, registration } = createTeacherDto
 
-    const [existentUser] = await this.usersService.findAll(email)
+    const [existentUser] = await this.usersService.findAll({ email })
 
     if(existentUser) throw new BadRequestException('Professor já cadastrado!')
     
@@ -40,10 +41,24 @@ export class TeachersService {
     return teacher
   }
 
-  async findAll(): Promise<Teacher[]> {
+  async findAll(listTeacherDto: ListTeacherDto): Promise<Teacher[]> {
+    const { registration, ...restListTeacherDto } = listTeacherDto
+
+    const users = await this.usersService.findAll({ ...restListTeacherDto })
+    const userIds = users.map(user => user.id)
+
     const teachers = await this.prisma.teacher.findMany({
       include: {
         user: true
+      },
+      where: {
+        registration: {
+          contains: registration,
+          mode: 'insensitive'
+        },
+        userId: {
+          in: userIds
+        }
       }
     });
 

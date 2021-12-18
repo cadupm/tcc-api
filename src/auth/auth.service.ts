@@ -13,7 +13,7 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<any> {
     let user: User;
     try {
-      [user] = await this.usersService.findAll(email);
+      [user] = await this.usersService.findAll({ email });
     } catch (error) {
       return null;
     }
