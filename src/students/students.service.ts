@@ -3,6 +3,7 @@ import { PrismaService } from 'src/database/prisma/prisma.service';
 import { FilesService } from 'src/files/files.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { ListStudentDto } from './dto/list-student-dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { Student } from './entities/student.entity';
 
@@ -17,7 +18,7 @@ export class StudentsService {
   async create(createStudentDto: CreateStudentDto): Promise<Student> {
     const { name, email, roles, password, registration } = createStudentDto
 
-    const [existentUser] = await this.usersService.findAll(email)
+    const [existentUser] = await this.usersService.findAll({ email })
 
     if(existentUser) throw new BadRequestException('Estudante já cadastrado!')
     
@@ -40,10 +41,24 @@ export class StudentsService {
     return student
   }
 
-  async findAll(): Promise<Student[]> {
+  async findAll(listStudentDto: ListStudentDto): Promise<Omit<Student, 'password'>[]> {
+    const { registration, ...restListStudentDto } = listStudentDto
+
+    const users = await this.usersService.findAll({ ...restListStudentDto })
+    const userIds = users.map(user => user.id)
+
     const students = await this.prisma.student.findMany({
       include: {
         user: true
+      },
+      where: {
+        registration: {
+          contains: registration,
+          mode: 'insensitive'
+        },
+        userId: {
+          in: userIds
+        }
       }
     });
 
@@ -77,10 +92,9 @@ export class StudentsService {
     const { email } = rest
 
     const studentInfo = await this.findOne(id)
-    
 
     if(email && studentInfo.user.email !== email) {
-      const [existentUserWithEmail] = await this.usersService.findAll(email)
+      const [existentUserWithEmail] = await this.usersService.findAll({ email })
 
       if(existentUserWithEmail.id !== studentInfo.userId) throw new BadRequestException('Estudante com email já cadastrado!')
     }

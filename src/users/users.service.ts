@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ListUsertDto } from './dto/list-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -14,7 +15,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { email } = createUserDto
 
-    const [existentUser] = await this.findAll(email)
+    const [existentUser] = await this.findAll({ email })
 
     if(existentUser) throw new BadRequestException('Usuário já cadastrado!')
     
@@ -25,19 +26,21 @@ export class UsersService {
     return user
   }
 
-  async findAll(email?: string): Promise<User[]> {
+  async findAll(listUserDto: ListUsertDto): Promise<User[]> {
+    const { name, email } = listUserDto
     const users = await this.prisma.user.findMany({
       where: {
-        email
+        name: {
+          contains: name,
+          mode: 'insensitive'
+        },
+        email: {
+          contains: email
+        }
       }
     })
 
-    const modifyUsers = users.map(user => { 
-      delete user.password
-      return user
-  })
-
-    return modifyUsers
+    return users
   }
 
   async findOne(id: string): Promise<User> {

@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { SubmissionsService } from 'src/submissions/submissions.service';
 import { CreateReviewDto } from './dto/create-review.dto';
+import { ListReviewDto } from './dto/list-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { Review } from './entities/review.entity';
 
@@ -18,16 +19,23 @@ export class ReviewsService {
 
     if(!existentSubmission) throw new NotFoundException('Submissão não encontrada!')
 
-    return this.prisma.review.create({
+    const review = this.prisma.review.create({
       data: createReviewDto
     })
+
+    if(!review) throw new BadRequestException('Revisão não foi criada!')
+
+    await this.submissionsService.update(existentSubmission.id, {notReviewed: false})
+
+    return review
   }
 
-  async findAll(): Promise<Review[]> {
+  async findAll(listReviewDto: ListReviewDto): Promise<Review[]> {
     return this.prisma.review.findMany({
       include: {
         metrics: true
-      }
+      },
+      where: listReviewDto
     })
   }
 
