@@ -1,3 +1,4 @@
+import * as faker from 'faker'
 import { Review } from "src/reviews/entities/review.entity"
 
 export class Metric {
@@ -9,3 +10,12 @@ export class Metric {
     createdAt: Date
     updatedAt: Date
 }
+
+export const mockCreateMetricResult = (): Metric => ({
+    id: faker.datatype.number(),
+    name: faker.datatype.string(),
+    description: faker.datatype.string(),
+    reviewId: faker.datatype.number(),
+    createdAt: new Date(),
+    updatedAt: new Date()
+});
