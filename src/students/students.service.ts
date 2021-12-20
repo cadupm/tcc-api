@@ -121,14 +121,12 @@ export class StudentsService {
   }
 
   async remove(id: string): Promise<void> {
-    const studentInfo = await this.findOne(id)
+    await this.findOne(id)
     
     await this.prisma.student.delete({
       where: {
         id
       }
     })
-
-    await this.usersService.remove(studentInfo.userId)
   }
 }
