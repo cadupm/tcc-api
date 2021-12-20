@@ -93,7 +93,7 @@ model Submission {
 model Review {
   id                      Int               @id @default(autoincrement())
   comment                 String
-  submission              Submission        @relation(fields: [submissionId], references:[id])
+  submission              Submission        @relation(fields: [submissionId], references:[id], onDelete: Cascade)
   submissionId            Int            
   mentorship              Mentorship        @relation(fields: [mentorshipId], references:[id])
   mentorshipId            String            @db.Uuid
@@ -107,7 +107,7 @@ model Metric {
   id                      Int               @id @default(autoincrement())
   name                    String
   description             String
-  review                  Review            @relation(fields: [reviewId], references:[id])
+  review                  Review            @relation(fields: [reviewId], references:[id], onDelete: Cascade)
   reviewId                Int            
   createdAt               DateTime          @default(now()) @map("created_at")
   updatedAt               DateTime          @updatedAt @map("updated_at")
