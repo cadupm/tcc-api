@@ -53,8 +53,6 @@ export class MentorshipsController {
     return this.mentorshipsService.update(id, updateMentorshipDto);
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(Role.Student)
   @Delete(':id')
   @ApiOperation({ summary: 'Remove a mentorship' })
   @ApiBearerAuth()
