@@ -39,7 +39,7 @@ export class ReviewsController {
   @ApiOperation({ summary: 'Get a review by id' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.reviewsService.findOne(+id);
   }
 
