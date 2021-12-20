@@ -95,7 +95,7 @@ model Review {
   comment                 String
   submission              Submission        @relation(fields: [submissionId], references:[id], onDelete: Cascade)
   submissionId            Int            
-  mentorship              Mentorship        @relation(fields: [mentorshipId], references:[id], onDelete: Cascade)
+  mentorship              Mentorship        @relation(fields: [mentorshipId], references:[id], onDelete: SetNull)
   mentorshipId            String            @db.Uuid
   metrics                 Metric[]
   createdAt               DateTime          @default(now()) @map("created_at")
