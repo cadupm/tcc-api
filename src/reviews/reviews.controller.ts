@@ -49,7 +49,7 @@ export class ReviewsController {
   @ApiOperation({ summary: 'Update a review by id' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
-  update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
+  update(@Param('id') id: number, @Body() updateReviewDto: UpdateReviewDto) {
     return this.reviewsService.update(+id, updateReviewDto);
   }
 
@@ -59,7 +59,7 @@ export class ReviewsController {
   @ApiOperation({ summary: 'Remove a review by id' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.reviewsService.remove(+id);
   }
 }
