@@ -19,11 +19,11 @@ export class SubmissionsService {
     const existentMentorship = await this.mentorshipsService.findOne(mentorshipId)
 
     if(existentMentorship.isInvitationAccepted === 'accepted') {
-      const urls = await Promise.all(
+      const filesUrl = await Promise.all(
         files.map(async (file) => this.filesService.uploadFile(existentMentorship.id, { path: file.originalname, buffer: file.buffer, mimetype: file.mimetype }, 'files')))
 
       return this.prisma.submission.create({
-          data: {...createSubmissionDto, filesUrl: urls }
+          data: {...createSubmissionDto, filesUrl }
       })
     }
     
