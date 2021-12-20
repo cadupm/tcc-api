@@ -61,7 +61,7 @@ export class SubmissionsController {
   @ApiOperation({ summary: 'Get a submission by id' })
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.submissionsService.findOne(+id);
   }
 
@@ -72,7 +72,7 @@ export class SubmissionsController {
   @ApiOperation({ summary: 'Update a submission by id' })
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FilesInterceptor('files'))
-  update(@Param('id') id: string, @Body() updateSubmissionDto: UpdateSubmissionDto, @UploadedFiles() files?: Express.Multer.File[]) {
+  update(@Param('id') id: number, @Body() updateSubmissionDto: UpdateSubmissionDto, @UploadedFiles() files?: Express.Multer.File[]) {
     return this.submissionsService.update(+id, updateSubmissionDto, files);
   }
 
@@ -82,7 +82,7 @@ export class SubmissionsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Remove a submission by id' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.submissionsService.remove(+id);
   }
 }
