@@ -32,7 +32,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "^8.0.0",
-    "@nestjs/swagger": "^5.1.5",
+    "@nestjs/swagger": "^11.2.6",
     "@prisma/client": "^3.5.0",
     "aws-sdk": "^2.1035.0",
     "class-transformer": "^0.5.1",
